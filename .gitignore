@@ -1,0 +1,4 @@
+/cmake-build-*
+/pkg/
+/src/
+/*.pkg.tar.zst
