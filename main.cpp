@@ -78,7 +78,8 @@ int main(int argc, char** argv)
 	
 	while (true)
 	{
-		ListenMicrophone();
+		if (ListenMicrophone() == 0)
+			continue;
 		
 		RecognizeVoiceCommand();
 		

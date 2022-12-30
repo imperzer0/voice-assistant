@@ -11,7 +11,7 @@
 #include <string>
 
 
-extern void ListenMicrophone();
+extern int ListenMicrophone();
 
 extern int RunThresholdTest();
 

@@ -17,7 +17,7 @@
 #include <sys/wait.h>
 
 
-void ListenMicrophone()
+int ListenMicrophone()
 {
 	// Create a sound recorder and start recording
 	sf::SoundBufferRecorder recorder;
@@ -33,6 +33,7 @@ void ListenMicrophone()
 	sf::OutputSoundFile outFile;
 	outFile.openFromFile(TEMPORARY_VOICE_COMMAND_FILE, SOUND_SAMPLE_RATE, 2);
 	
+	int frames_recorded = 0;
 	float prev_volume = 0.f;
 	sf::SoundBuffer prev_buffer;
 	// Continuously record audio and check the volume
@@ -60,15 +61,21 @@ void ListenMicrophone()
 		if (volume > sound_threshold || prev_volume > sound_threshold)
 		{
 			if (prev_volume < sound_threshold)
+			{
 				outFile.write(prev_buffer.getSamples(), prev_buffer.getSampleCount());
+				++frames_recorded;
+			}
 			
 			outFile.write(buffer.getSamples(), buffer.getSampleCount());
+			++frames_recorded;
 			i = 0;
 		}
 		
 		prev_volume = volume;
 		prev_buffer = buffer;
 	}
+	
+	return frames_recorded;
 }
 
 
