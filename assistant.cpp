@@ -65,6 +65,7 @@ void ListenMicrophone()
 	}
 }
 
+
 int RunThresholdTest()
 {
 	std::cout << "You ran threshold test. In the next 15 seconds program will\n"
@@ -136,6 +137,7 @@ int RunThresholdTest()
 	return 0;
 }
 
+
 pplx::task<void> SendEOSMessage(web::websockets::client::websocket_callback_client client)
 {
 	if (verbose) std::clog << "Audio sent.\n";
@@ -163,7 +165,7 @@ void SendAudio(web::websockets::client::websocket_callback_client client, const 
 
 static std::stringstream last_result;
 
-void RecognizeVoice()
+void RecognizeVoiceCommand()
 {
 	std::string const websocketEndpoint = "wss://api.rev.ai/speechtotext/v1/stream";
 	std::string const accessToken = APIToken;
@@ -193,8 +195,6 @@ void RecognizeVoice()
 					
 					if (data["type"].as_string() == "final")
 					{
-						last_result.str("");
-						
 						// go thru the response and output the values
 						web::json::array elements = data["elements"].as_array();
 						for (size_t index = 0; index < elements.size(); ++index)
@@ -238,22 +238,18 @@ void RecognizeVoice()
 	}
 }
 
-std::string GetLastResult()
-{
-	return std::move(last_result.str());
-}
 
-
-int ExecuteVoiceCommand(const std::string& voice_command)
+int ExecuteVoiceCommand()
 {
-	auto action = match_command(voice_command);
+	auto action = match_command(last_result.str());
+	last_result.str("");
 	if (action == match_command_failed())
 	{
-		std::cerr << "Command \"" << voice_command << "\" not recognized. Try again.\n";
+		std::cerr << "Command \"" << last_result.str() << "\" not recognized. Try again.\n";
 		return false;
 	}
 	
-	if (verbose) std::cerr << "Command \"" << voice_command << "\" not recognized. Try again.\n";
+	if (verbose) std::cerr << "Executing command \"" << last_result.str() << "\"...\n";
 	
 	char* argv[] = { "/bin/bash", "-c", action->second.data(), nullptr };
 	

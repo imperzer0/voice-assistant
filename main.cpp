@@ -80,9 +80,9 @@ int main(int argc, char** argv)
 	{
 		ListenMicrophone();
 		
-		RecognizeVoice();
+		RecognizeVoiceCommand();
 		
-		if (ExecuteVoiceCommand(GetLastResult()))
+		if (ExecuteVoiceCommand())
 			return -2;
 	}
 }

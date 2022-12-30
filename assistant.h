@@ -15,10 +15,8 @@ extern void ListenMicrophone();
 
 extern int RunThresholdTest();
 
-extern void RecognizeVoice();
+extern void RecognizeVoiceCommand();
 
-extern std::string GetLastResult();
-
-extern int ExecuteVoiceCommand(const std::string& voice_command);
+extern int ExecuteVoiceCommand();
 
 #endif //ASSISTANT_ASSISTANT_H
