@@ -24,6 +24,12 @@ void ListenMicrophone()
 	recorder.setChannelCount(2);
 	recorder.start(SOUND_SAMPLE_RATE);
 	
+	// Discard first second
+	if (verbose) std::clog << "Discarding first second...\n";
+	sf::sleep(sf::seconds(1));
+	recorder.stop();
+	recorder.start(SOUND_SAMPLE_RATE);
+	
 	sf::OutputSoundFile outFile;
 	outFile.openFromFile(TEMPORARY_VOICE_COMMAND_FILE, SOUND_SAMPLE_RATE, 2);
 	
