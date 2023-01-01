@@ -34,7 +34,7 @@ int ListenMicrophone()
 	outFile.openFromFile(TEMPORARY_VOICE_COMMAND_FILE, SOUND_SAMPLE_RATE, 2);
 	
 	int frames_recorded = 0;
-	float prev_volume = 0.f;
+	float prev_volume[2] = { 0.f, 0.f };
 	sf::SoundBuffer prev_buffer;
 	// Continuously record audio and check the volume
 	for (size_t i = 0; i < 5; ++i)
@@ -57,10 +57,14 @@ int ListenMicrophone()
 		
 		if (verbose) std::clog << "Chunk volume: [" << volume << "].\n";
 		
-		// If the volume exceeds the threshold, save the audio to the file
-		if (volume > sound_threshold || prev_volume > sound_threshold)
+		// If the volume exceeds the threshold, reset the counter
+		if (volume > sound_threshold)
+			i = 0;
+		
+		// If the one of 3 chunks of volume exceeds the threshold, save the audio to the file
+		if (volume > sound_threshold || prev_volume[0] > sound_threshold || prev_volume[1] > sound_threshold)
 		{
-			if (prev_volume < sound_threshold)
+			if (prev_volume[1] < sound_threshold)
 			{
 				outFile.write(prev_buffer.getSamples(), prev_buffer.getSampleCount());
 				++frames_recorded;
@@ -68,10 +72,10 @@ int ListenMicrophone()
 			
 			outFile.write(buffer.getSamples(), buffer.getSampleCount());
 			++frames_recorded;
-			i = 0;
 		}
 		
-		prev_volume = volume;
+		prev_volume[1] = prev_volume[0];
+		prev_volume[0] = volume;
 		prev_buffer = buffer;
 	}
 	
@@ -188,7 +192,6 @@ void RecognizeVoiceCommand()
 	try
 	{
 		bool keepListening = true;
-		bool gotResult = false;
 		web::websockets::client::websocket_callback_client client;
 		client.connect(U(url)).wait();
 		
@@ -197,16 +200,16 @@ void RecognizeVoiceCommand()
 				{
 					std::string response = msg.extract_string().get();
 					web::json::value data = web::json::value::parse(response);
+					std::string type = data["type"].as_string();
 					
-					if (data["type"].as_string() == "connected")
+					if (type == "connected")
 					{
 						if (verbose) std::clog << "WebSocket Connected.\n";
 						
 						// Now that the socket is connected send the data
 						SendAudio(client, TEMPORARY_VOICE_COMMAND_FILE);
 					}
-					
-					if (data["type"].as_string() == "final")
+					else if (type == "final")
 					{
 						// go thru the response and output the values
 						web::json::array elements = data["elements"].as_array();
@@ -218,7 +221,7 @@ void RecognizeVoiceCommand()
 						}
 						
 						if (verbose) std::clog << "Got result.\n";
-						gotResult = true;
+						keepListening = false;
 					}
 				}
 		);
@@ -231,17 +234,12 @@ void RecognizeVoiceCommand()
 				)
 				{
 					if (verbose) std::clog << "Closing Connection...\n";
-					client.close();
 					keepListening = false;
+					client.close();
 				}
 		);
 		
-		while (keepListening)
-		{
-			if (gotResult)
-				client.close();
-			sf::sleep(sf::milliseconds(100));
-		}
+		while (keepListening) sf::sleep(sf::milliseconds(100));
 		
 		if (verbose) std::clog << "Streaming Complete.\n";
 	}
