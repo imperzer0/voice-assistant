@@ -2,7 +2,7 @@
 # Maintained by imper <imperator999mcpe@gmail.com>
 
 pkgname=assistant
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc='Voice-controlled assistant in C++ using rev.ai API'
 author="imperzer0"
