@@ -75,27 +75,29 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	if (run_threshold_test)
-		return RunThresholdTest();
-	
-	
-	if (parse_config(config))
-		return -1;
-	
-	if (verbose) print_config();
-	
 	InitGraphics();
-	for (int i = 0; i < 20; ++i)
+	if (run_threshold_test)
 	{
-		if (ListenMicrophone() == 0)
-			continue;
+		RunThresholdTest();
+	}
+	else
+	{
+		if (parse_config(config))
+			return -1;
 		
-		i = 0;
-		RecognizeVoiceCommand();
-		
-		if (ExecuteVoiceCommand())
-			IndicateError();
-		usleep(150000);
+		if (verbose) print_config();
+		for (int i = 0; i < 20; ++i)
+		{
+			if (ListenMicrophone() == 0)
+				continue;
+			
+			i = 0;
+			RecognizeVoiceCommand();
+			
+			if (ExecuteVoiceCommand())
+				IndicateError();
+			usleep(150000);
+		}
 	}
 	
 	IndicateExit();

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Maintained by imper <imperator999mcpe@gmail.com>
 
-pkgname=assistant
+pkgname=voice-assistant
 pkgver=1.1
 pkgrel=1
 pkgdesc='Voice-controlled assistant in C++ using rev.ai API'
@@ -16,8 +16,10 @@ _srcprefix="local:/"
 _libfiles=(
   "CMakeLists.txt" "main.cpp"
   "assistant.cpp" "assistant.h" "constants.hpp"
+  "$pkgname.service" "$pkgname.conf"
   "config.cpp" "config.h"
   "cmdline.cpp" "cmdline.h"
+  "graphics.cpp" "graphics.h"
 )
 
 # shellcheck disable=SC2068
@@ -28,10 +30,6 @@ done
 
 _package_version=" ("$pkgver"-"$pkgrel")"
 
-prepare() {
-  makepkg -sif --noconfirm -p PKGBUILD.fineftp
-}
-
 build() {
   cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ \
     -DPACKAGE_VERSION="$_package_version" -DAPPNAME="$pkgname" .
@@ -39,5 +37,7 @@ build() {
 }
 
 package() {
-  install -Dm755 $pkgname "$pkgdir/usr/bin/$pkgname"
+  install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm755 "$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
+  install -Dm755 "$pkgname.service" "$pkgdir/usr/lib/systemd/system/$pkgname.service"
 }

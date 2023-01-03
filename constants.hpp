@@ -15,11 +15,11 @@
 # endif
 
 # ifndef APPNAME
-#  define APPNAME "assistant"
+#  define APPNAME "voice-assistant"
 # endif
 
 # ifndef DEFAULT_CONFIG_FILE
-#  define DEFAULT_CONFIG_FILE "/etc/assistant.conf"
+#  define DEFAULT_CONFIG_FILE "/etc/voice-assistant.conf"
 # endif
 
 # ifndef TEMPORARY_VOICE_COMMAND_FILE

@@ -102,8 +102,7 @@ int RunThresholdTest()
 	recorder.start(SOUND_SAMPLE_RATE);
 	IndicateListening();
 	
-	float average_volume = 0.f, average_high_volume = 0.f;
-	size_t high_volume_amount = 0;
+	float average_volume = 1000.f, minimal_high_volume = 100000000.f;
 	
 	// Discard first second
 	if (verbose) std::clog << "Discarding first second...\n";
@@ -112,7 +111,7 @@ int RunThresholdTest()
 	recorder.start(SOUND_SAMPLE_RATE);
 	
 	// Continuously record audio and check the volume
-	for (size_t i = 0; i < 13; ++i)
+	for (size_t i = 0; i < 5; ++i)
 	{
 		// Record a small chunk of audio
 		sf::sleep(sf::seconds(1));
@@ -131,31 +130,46 @@ int RunThresholdTest()
 		
 		average_volume += volume;
 		
-		if (volume > average_volume / float(i + 1))
+		if (verbose) std::clog << "Chunk volume: [" << volume << "].\n";
+	}
+	
+	// Continuously record audio and check the volume
+	for (size_t i = 0; i < 8; ++i)
+	{
+		// Record a small chunk of audio
+		sf::sleep(sf::seconds(1));
+		recorder.stop();
+		sf::SoundBuffer buffer = recorder.getBuffer();
+		recorder.start(SOUND_SAMPLE_RATE);
+		
+		// Check the volume of the audio
+		float volume = 0.f;
+		const sf::Int16* samples = buffer.getSamples();
+		for (std::size_t i = 0; i < buffer.getSampleCount(); ++i)
 		{
-			++high_volume_amount;
-			average_high_volume += volume;
+			volume += std::abs(samples[i]);
 		}
+		volume /= buffer.getSampleCount();
+		
+		average_volume += volume;
+		
+		if (volume > average_volume / float(i + 6) - 400)
+			minimal_high_volume = std::min(minimal_high_volume, volume);
 		
 		if (verbose) std::clog << "Chunk volume: [" << volume << "].\n";
 	}
 	
 	IndicateNotListening();
 	
-	average_volume /= 100.f;
+	average_volume /= 14.f;
 	average_volume = std::floor(average_volume);
 	
-	average_high_volume /= float(high_volume_amount);
-	average_high_volume = std::floor(average_high_volume);
+	minimal_high_volume = std::floor(minimal_high_volume);
 	
 	if (average_volume == 0.f)
-	{
 		std::cout << "\nIt seems you didn't say anything.\nCheck your microphone and try again.\n";
-	}
 	else
-	{
-		std::cout << "\nAverage volume of sound was [" << average_volume << "].\nWe recommend use it as threshold.\n";
-	}
+		std::cout << "\nAverage volume was [" << average_volume << "].\nWe recommend use as threshold [" << minimal_high_volume << "].\n";
 	
 	return 0;
 }

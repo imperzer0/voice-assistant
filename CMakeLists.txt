@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(assistant)
+project(voice-assistant)
 
 find_package(cpprestsdk REQUIRED)
 
@@ -8,11 +8,11 @@ find_package(SFML 2.5 COMPONENTS system audio REQUIRED)
 set(CMAKE_CXX_STANDARD 20)
 
 if (DEFINED PACKAGE_VERSION)
-    add_compile_definitions("VERSION=${PACKAGE_VERSION}")
+    add_compile_definitions("VERSION=\"${PACKAGE_VERSION}\"")
 endif ()
 
 if (DEFINED APPNAME)
-    add_compile_definitions("APPNAME=${APPNAME}")
+    add_compile_definitions("APPNAME=\"${APPNAME}\"")
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -lX11")
@@ -27,6 +27,6 @@ else ()
     message("Enabled optimization compiler flags.")
 endif ()
 
-add_executable(assistant main.cpp cmdline.cpp config.cpp assistant.cpp graphics.cpp)
+add_executable(voice-assistant main.cpp cmdline.cpp config.cpp assistant.cpp graphics.cpp)
 
-target_link_libraries(assistant cpprestsdk::cpprest crypto ssl pthread sfml-system sfml-audio)
+target_link_libraries(voice-assistant cpprestsdk::cpprest crypto ssl pthread sfml-system sfml-audio)
