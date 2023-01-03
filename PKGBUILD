@@ -38,6 +38,6 @@ build() {
 
 package() {
   install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
-  install -Dm755 "$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
   install -Dm755 "$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+  install -Dm644 "$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
 }
