@@ -16,7 +16,7 @@ _srcprefix="local:/"
 _libfiles=(
   "CMakeLists.txt" "main.cpp"
   "assistant.cpp" "assistant.h" "constants.hpp"
-  "$pkgname.service" "$pkgname.conf"
+  "$pkgname.desktop" "$pkgname.conf"
   "config.cpp" "config.h"
   "cmdline.cpp" "cmdline.h"
   "graphics.cpp" "graphics.h"
@@ -39,5 +39,5 @@ build() {
 package() {
   install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
   install -Dm755 "$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
-  install -Dm755 "$pkgname.service" "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -Dm755 "$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
 }
