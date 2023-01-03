@@ -100,6 +100,39 @@ void print_config()
 		fprintf(stderr, "\"%s\"=\"%s\"\n", kv.first.c_str(), kv.second.c_str());
 }
 
+
+// Function to search for a pattern in a string using the Boyer-Moore algorithm
+int find_substr(const std::string& text, const std::string& pattern)
+{
+	int n = text.length();
+	int m = pattern.length();
+	
+	int badchar[256];
+	
+	for (int i = 0; i < 256; i++)
+		badchar[i] = -1;
+	
+	for (int i = 0; i < m; i++)
+		badchar[(int)pattern[i]] = i;
+	
+	int s = 0; // s is the shift of the pattern with respect to the text
+	while (s <= (n - m))
+	{
+		int j = m - 1;
+		
+		while (j >= 0 && pattern[j] == text[s + j])
+			j--;
+		
+		if (j < 0)
+		{
+			return s;
+		}
+		else
+			s += std::max(1, j - badchar[text[s + j]]);
+	}
+	return -1;
+}
+
 std::unordered_map<std::string, std::string>::iterator match_command(const std::string& voice_command)
 {
 	std::string normalized_command;
@@ -128,7 +161,11 @@ std::unordered_map<std::string, std::string>::iterator match_command(const std::
 	
 	while (normalized_command.ends_with(' ')) normalized_command.pop_back();
 	
-	return config.find(normalized_command);
+	for (auto action = config.begin(); action != config.end(); ++action)
+		if (find_substr(normalized_command, action->first) >= 0)
+			return action;
+	
+	return config.end();
 }
 
 std::unordered_map<std::string, std::string>::iterator match_command_failed()

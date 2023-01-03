@@ -3,5 +3,3 @@ Name=Voice Assistant
 Exec=/usr/bin/voice-assistant -t 900
 Icon=audio-input-microphone
 Type=Application
-X-KDE-autostart-phase=1
-X-GNOME-Autostart-enabled=true
