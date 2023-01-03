@@ -104,8 +104,21 @@ std::unordered_map<std::string, std::string>::iterator match_command(const std::
 {
 	std::string normalized_command;
 	char prev = ' ';
+	bool lt = false;
 	for (auto& c : voice_command)
 	{
+		if (c == '<')
+		{
+			lt = true;
+			continue;
+		}
+		if (c == '>')
+		{
+			lt = false;
+			continue;
+		}
+		if (lt) continue;
+		
 		if (c == ' ' && prev != ' ' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')
 		{
 			normalized_command.push_back(std::tolower(c));

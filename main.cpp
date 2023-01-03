@@ -87,18 +87,19 @@ int main(int argc, char** argv)
 	InitGraphics();
 	for (int i = 0; i < 20; ++i)
 	{
-		IndicateListening();
 		if (ListenMicrophone() == 0)
 			continue;
 		
 		i = 0;
-		IndicateRecognizing();
 		RecognizeVoiceCommand();
 		
-		IndicateExecution();
 		if (ExecuteVoiceCommand())
 			IndicateError();
 		usleep(150000);
 	}
+	
+	IndicateExit();
 	FreeGraphics();
+	usleep(300000);
+	return 0;
 }

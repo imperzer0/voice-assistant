@@ -9,6 +9,7 @@
 #include "config.h"
 #include "constants.hpp"
 #include "cmdline.h"
+#include "graphics.h"
 #include <cpprest/filestream.h>
 #include <cpprest/ws_client.h>
 #include <cpprest/json.h>
@@ -29,6 +30,7 @@ int ListenMicrophone()
 	sf::sleep(sf::seconds(1));
 	recorder.stop();
 	recorder.start(SOUND_SAMPLE_RATE);
+	IndicateListening();
 	
 	sf::OutputSoundFile outFile;
 	outFile.openFromFile(TEMPORARY_VOICE_COMMAND_FILE, SOUND_SAMPLE_RATE, 2);
@@ -64,7 +66,7 @@ int ListenMicrophone()
 		// If the one of 3 chunks of volume exceeds the threshold, save the audio to the file
 		if (volume > sound_threshold || prev_volume[0] > sound_threshold || prev_volume[1] > sound_threshold)
 		{
-			if (prev_volume[1] < sound_threshold)
+			if (prev_volume[1] < sound_threshold && prev_volume[0] < sound_threshold)
 			{
 				outFile.write(prev_buffer.getSamples(), prev_buffer.getSampleCount());
 				++frames_recorded;
@@ -79,6 +81,7 @@ int ListenMicrophone()
 		prev_buffer = buffer;
 	}
 	
+	IndicateNotListening();
 	return frames_recorded;
 }
 
@@ -97,6 +100,7 @@ int RunThresholdTest()
 	sf::SoundBufferRecorder recorder;
 	recorder.setChannelCount(2);
 	recorder.start(SOUND_SAMPLE_RATE);
+	IndicateListening();
 	
 	float average_volume = 0.f, average_high_volume = 0.f;
 	size_t high_volume_amount = 0;
@@ -135,6 +139,8 @@ int RunThresholdTest()
 		
 		if (verbose) std::clog << "Chunk volume: [" << volume << "].\n";
 	}
+	
+	IndicateNotListening();
 	
 	average_volume /= 100.f;
 	average_volume = std::floor(average_volume);
@@ -252,15 +258,17 @@ void RecognizeVoiceCommand()
 
 int ExecuteVoiceCommand()
 {
-	auto action = match_command(last_result.str());
+	IndicateExecution();
+	std::string vc = last_result.str();
+	auto action = match_command(vc);
 	last_result.str("");
 	if (action == match_command_failed())
 	{
-		std::cerr << "Command \"" << last_result.str() << "\" not recognized. Try again.\n";
+		std::cerr << "Command \"" << vc << "\" not recognized. Try again.\n";
 		return true;
 	}
 	
-	if (verbose) std::cerr << "Executing command \"" << last_result.str() << "\"...\n";
+	if (verbose) std::cerr << "Executing command \"" << vc << "\"...\n";
 	
 	char* argv[] = { "/bin/bash", "-c", action->second.data(), nullptr };
 	

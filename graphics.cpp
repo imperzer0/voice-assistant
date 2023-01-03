@@ -62,12 +62,17 @@ void IndicateError()
 	DrawIndicatorCircle("#aa3333");
 }
 
+void IndicateExit()
+{
+	DrawIndicatorCircle("#ffaa77");
+}
+
 void IndicateListening()
 {
 	DrawIndicatorCircle("#2266aa");
 }
 
-void IndicateRecognizing()
+void IndicateNotListening()
 {
 	DrawIndicatorCircle("#888888");
 }

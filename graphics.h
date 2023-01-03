@@ -14,9 +14,11 @@ void FreeGraphics();
 
 void IndicateError();
 
+void IndicateExit();
+
 void IndicateListening();
 
-void IndicateRecognizing();
+void IndicateNotListening();
 
 void IndicateExecution();
 
