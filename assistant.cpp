@@ -257,7 +257,7 @@ int ExecuteVoiceCommand()
 	if (action == match_command_failed())
 	{
 		std::cerr << "Command \"" << last_result.str() << "\" not recognized. Try again.\n";
-		return false;
+		return true;
 	}
 	
 	if (verbose) std::cerr << "Executing command \"" << last_result.str() << "\"...\n";

@@ -1,10 +1,18 @@
-#include <iostream>
+// Copyright (c) 2022 Perets Dmytro
+// Author: Perets Dmytro <imperator999mcpe@gmail.com>
+//
+// Personal usage is allowed only if this comment was not changed or deleted.
+// Commercial usage must be agreed with the author of this comment.
+
+
 #include <getopt.h>
 #include <cstring>
+#include <csignal>
 #include "config.h"
 #include "constants.hpp"
 #include "cmdline.h"
 #include "assistant.h"
+#include "graphics.h"
 
 
 static constexpr const char* short_args = "c:t:TVvh";
@@ -76,14 +84,21 @@ int main(int argc, char** argv)
 	
 	if (verbose) print_config();
 	
-	while (true)
+	InitGraphics();
+	for (int i = 0; i < 20; ++i)
 	{
+		IndicateListening();
 		if (ListenMicrophone() == 0)
 			continue;
 		
+		i = 0;
+		IndicateRecognizing();
 		RecognizeVoiceCommand();
 		
+		IndicateExecution();
 		if (ExecuteVoiceCommand())
-			return -2;
+			IndicateError();
+		usleep(150000);
 	}
+	FreeGraphics();
 }

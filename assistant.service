@@ -1,0 +1,12 @@
+[Unit]
+Description=Voice-controlled Assistant
+After=graphical.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+ExecStart=/usr/bin/assistant -t 1000
+
+[Install]
+WantedBy=multi-user.target

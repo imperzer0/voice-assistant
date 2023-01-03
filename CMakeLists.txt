@@ -15,6 +15,8 @@ if (DEFINED APPNAME)
     add_compile_definitions("APPNAME=${APPNAME}")
 endif ()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -lX11")
+
 if (NOT ("${CMAKE_BUILD_TYPE}" STREQUAL "Release"))
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
@@ -25,6 +27,6 @@ else ()
     message("Enabled optimization compiler flags.")
 endif ()
 
-add_executable(assistant main.cpp cmdline.cpp config.cpp assistant.cpp)
+add_executable(assistant main.cpp cmdline.cpp config.cpp assistant.cpp graphics.cpp)
 
-target_link_libraries(assistant PRIVATE cpprestsdk::cpprest crypto ssl cpprest pthread sfml-system sfml-audio)
+target_link_libraries(assistant cpprestsdk::cpprest crypto ssl pthread sfml-system sfml-audio)
