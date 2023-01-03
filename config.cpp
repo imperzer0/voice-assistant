@@ -8,7 +8,7 @@
 #include <cstring>
 
 
-static std::unordered_map<std::string, std::string> config;
+static std::list<std::pair<std::string, std::string>> config;
 
 char* APIToken = nullptr;
 
@@ -86,7 +86,7 @@ bool parse_config(const char* config_file)
 			*value_end = '\0';
 		}
 		
-		config[key_phrase_start] = value_start;
+		config.push_back({ key_phrase_start, value_start });
 	}
 	
 	fclose(fp);
@@ -133,7 +133,7 @@ int find_substr(const std::string& text, const std::string& pattern)
 	return -1;
 }
 
-std::unordered_map<std::string, std::string>::iterator match_command(const std::string& voice_command)
+std::list<std::pair<std::string, std::string>>::iterator match_command(const std::string& voice_command)
 {
 	std::string normalized_command;
 	char prev = ' ';
@@ -168,7 +168,7 @@ std::unordered_map<std::string, std::string>::iterator match_command(const std::
 	return config.end();
 }
 
-std::unordered_map<std::string, std::string>::iterator match_command_failed()
+std::list<std::pair<std::string, std::string>>::iterator match_command_failed()
 {
 	return config.end();
 }

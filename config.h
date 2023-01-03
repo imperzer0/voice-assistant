@@ -8,7 +8,7 @@
 #ifndef ASSISTANT_CONFIG_H
 #define ASSISTANT_CONFIG_H
 
-#include <unordered_map>
+#include <list>
 #include <string>
 
 
@@ -18,8 +18,8 @@ extern bool parse_config(const char* config_file);
 
 extern void print_config();
 
-extern std::unordered_map<std::string, std::string>::iterator match_command(const std::string& voice_command);
+extern std::list<std::pair<std::string, std::string>>::iterator match_command(const std::string& voice_command);
 
-extern std::unordered_map<std::string, std::string>::iterator match_command_failed();
+extern std::list<std::pair<std::string, std::string>>::iterator match_command_failed();
 
 #endif //ASSISTANT_CONFIG_H
