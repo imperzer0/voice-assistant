@@ -225,13 +225,10 @@ void RecognizeVoiceCommand()
 					if (type == "connected")
 					{
 						if (verbose) std::clog << "WebSocket Connected.\n";
-						
-						// Now that the socket is connected send the data
 						SendAudio(client, TEMPORARY_VOICE_COMMAND_FILE);
 					}
 					else if (type == "final")
 					{
-						// go thru the response and output the values
 						web::json::array elements = data["elements"].as_array();
 						for (size_t index = 0; index < elements.size(); ++index)
 						{
@@ -239,27 +236,23 @@ void RecognizeVoiceCommand()
 							std::string value = element["value"].as_string();
 							last_result << value << " ";
 						}
-						
 						if (verbose) std::clog << "Got result.\n";
-						keepListening = false;
 					}
 				}
 		);
 		
 		client.set_close_handler(
 				[ & ](
-						web::websockets::client::websocket_close_status close_status,
-						const utility::string_t& reason,
+						web::websockets::client::websocket_close_status close_status, const utility::string_t& reason,
 						const std::error_code& error
-				)
-				{
-					if (verbose) std::clog << "Closing Connection...\n";
-					keepListening = false;
-					client.close();
-				}
+				) { keepListening = false; }
 		);
 		
 		while (keepListening) sf::sleep(sf::milliseconds(100));
+		
+		if (verbose) std::clog << "Closing Connection...\n";
+		
+		client.close().wait();
 		
 		if (verbose) std::clog << "Streaming Complete.\n";
 	}
